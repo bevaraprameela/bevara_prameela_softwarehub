@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: import.meta.env.VITE_API_URL,
 });
 
 api.interceptors.request.use((config) => {
@@ -17,13 +17,9 @@ api.interceptors.response.use(
   (error) => {
     const status = error?.response?.status;
     if (status === 401 || status === 403) {
-      try {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-      } catch {}
-      if (typeof window !== "undefined") {
-        window.location.assign("/login");
-      }
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      window.location.assign("/login");
     }
     return Promise.reject(error);
   }
