@@ -28,12 +28,20 @@ export default function Login() {
         return;
       }
 
+      // login(res.data.token, res.data.user);
+
+      // // ✅ Navigate based on backend role (safer)
+      // if (backendRole === "admin") navigate("/admin");
+      // else if (backendRole === "employee") navigate("/employee");
+      // else navigate("/client");
       login(res.data.token, res.data.user);
 
-      // ✅ Navigate based on backend role (safer)
-      if (backendRole === "admin") navigate("/admin");
-      else if (backendRole === "employee") navigate("/employee");
-      else navigate("/client");
+// force production navigation
+setTimeout(() => {
+  if (role === "Admin") window.location.href = "/admin";
+  else if (role === "Employee") window.location.href = "/employee";
+  else window.location.href = "/client";
+}, 200);
 
     } catch (err) {
       setError("Invalid credentials");
