@@ -17,10 +17,14 @@ export default function Login() {
     try {
       const res = await api.post("/auth/login", { email, password });
       // Enforce selected role matches account role
-      if (res.data.user.role !== role) {
-        setError("Selected role does not match your account role");
-        return;
-      }
+      // if (res.data.user.role !== role) {
+      //   setError("Selected role does not match your account role");
+      //   return;
+      // }
+      if (res.data.user.role.toLowerCase() !== role.toLowerCase()) {
+  setError("Selected role does not match your account role");
+  return;
+}
       login(res.data.token, res.data.user);
       if (role === "Admin") navigate("/admin");
       else if (role === "Employee") navigate("/employee");
