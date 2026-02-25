@@ -1,49 +1,55 @@
+
 import { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import api from "../api/client.js";
 import { AuthContext } from "../context/AuthContext.jsx";
 
 export default function Login() {
   const { login } = useContext(AuthContext);
-  const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [role, setRole] = useState("admin"); // ✅ lowercase default
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+    role: "admin"   // ✅ default admin
+  });
+
   const [error, setError] = useState(null);
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   const submit = async (e) => {
     e.preventDefault();
     setError(null);
 
     try {
-      const res = await api.post("/auth/login", { email, password });
+      const res = await api.post("/auth/login", {
+        email: form.email,
+        password: form.password
+      });
 
+      // 🔥 convert both to lowercase before compare
       const backendRole = res.data.user.role.toLowerCase();
-      const selectedRole = role.toLowerCase();
+      const selectedRole = form.role.toLowerCase();
 
-      // ✅ Proper role match check
       if (backendRole !== selectedRole) {
         setError("Selected role does not match your account role");
         return;
       }
 
-      // login(res.data.token, res.data.user);
-
-      // // ✅ Navigate based on backend role (safer)
-      // if (backendRole === "admin") navigate("/admin");
-      // else if (backendRole === "employee") navigate("/employee");
-      // else navigate("/client");
       login(res.data.token, res.data.user);
 
-// force production navigation
-setTimeout(() => {
-  if (role === "Admin") window.location.href = "/admin";
-  else if (role === "Employee") window.location.href = "/employee";
-  else window.location.href = "/client";
-}, 200);
+      // 🔥 FORCE production redirect
+      setTimeout(() => {
+        if (backendRole === "admin")
+          window.location.href = "/admin";
+        else if (backendRole === "employee")
+          window.location.href = "/employee";
+        else
+          window.location.href = "/client";
+      }, 200);
 
-    } catch (err) {
+    } catch {
       setError("Invalid credentials");
     }
   };
@@ -55,11 +61,11 @@ setTimeout(() => {
 
         <form onSubmit={submit} className="space-y-4">
 
-          {/* ✅ Lowercase values */}
           <select
+            name="role"
             className="w-full border rounded p-2"
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
+            value={form.role}
+            onChange={handleChange}
           >
             <option value="admin">Admin</option>
             <option value="employee">Employee</option>
@@ -67,21 +73,21 @@ setTimeout(() => {
           </select>
 
           <input
+            name="email"
             className="w-full border rounded p-2"
             placeholder="Email"
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
+            value={form.email}
+            onChange={handleChange}
           />
 
           <input
+            name="password"
             className="w-full border rounded p-2"
             placeholder="Password"
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
+            value={form.password}
+            onChange={handleChange}
           />
 
           {error && <div className="text-red-600 text-sm">{error}</div>}
@@ -89,23 +95,8 @@ setTimeout(() => {
           <button className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded p-2">
             Login
           </button>
+
         </form>
-
-        <div className="mt-4 grid grid-cols-2 gap-2">
-          <button
-            onClick={() => navigate("/forgot")}
-            className="text-blue-700 underline text-left"
-          >
-            Forgot password?
-          </button>
-
-          <button
-            onClick={() => navigate("/reset")}
-            className="text-blue-700 underline text-right"
-          >
-            Reset password
-          </button>
-        </div>
       </div>
     </div>
   );
