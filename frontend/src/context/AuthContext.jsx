@@ -1,32 +1,31 @@
-import { createContext, useEffect, useState } from "react";
+
+import { createContext, useState } from "react";
 
 export const AuthContext = createContext(null);
 
 export default function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
 
-  useEffect(() => {
-    const t = localStorage.getItem("token");
+  // 🚀 Load user directly from localStorage initially
+  const [token, setToken] = useState(() => localStorage.getItem("token"));
+  const [user, setUser] = useState(() => {
     const u = localStorage.getItem("user");
-    if (t && u) {
-      setToken(t);
-      setUser(JSON.parse(u));
-    }
-  }, []);
+    return u ? JSON.parse(u) : null;
+  });
 
   const login = (t, u) => {
     localStorage.setItem("token", t);
     localStorage.setItem("user", JSON.stringify(u));
+
+    // 🔥 Important: Update state BEFORE navigation happens
     setToken(t);
     setUser(u);
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    localStorage.clear();
     setToken(null);
     setUser(null);
+    window.location.href = "/login";
   };
 
   return (
