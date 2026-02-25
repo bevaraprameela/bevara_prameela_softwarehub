@@ -12,7 +12,7 @@ async function run() {
   await connectDB(MONGO_URI);
   const email = process.env.ADMIN_EMAIL || "admin@prameela.com";
   const password = process.env.ADMIN_PASSWORD || "Admin@12345";
-  const name = process.env.ADMIN_NAME || "Admin";
+  const name = process.env.ADMIN_NAME || "admin";
 
   let admin = await User.findOne({ email });
   if (admin) {
