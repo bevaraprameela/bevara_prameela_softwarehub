@@ -1,4 +1,5 @@
-
+import User from "./models/User.js";
+import bcrypt from "bcryptjs";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -41,12 +42,36 @@ app.use("/api/service-requests", serviceRequestRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api", lookupRoutes);
+const createAdminIfNotExists = async () => {
+  const adminEmail = "admin@prameela.com";
 
+  const existingAdmin = await User.findOne({ email: adminEmail });
+
+  if (!existingAdmin) {
+    const hashedPassword = await bcrypt.hash("Admin@12345", 10);
+
+    await User.create({
+      name: "Admin",
+      email: adminEmail,
+      password: hashedPassword,
+      role: "Admin",
+      companyName: "Prameela Software Solutions"
+    });
+
+    console.log("Admin created in Atlas DB");
+  } else {
+    console.log("Admin already exists");
+  }
+};
 const PORT = process.env.PORT || 4000;
 const MONGO_URI = process.env.MONGO_URI;
 
-connectDB(MONGO_URI)
-  .then(() => {
+// connectDB(MONGO_URI)
+//   .then(() => {
+  connectDB(MONGO_URI)
+  .then(async () => {
+
+    await createAdminIfNotExists();
     const server = http.createServer(app);
     const io = new SocketIOServer(server, {
       cors: { origin: "*", methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"] }
