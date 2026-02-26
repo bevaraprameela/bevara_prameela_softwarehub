@@ -1,7 +1,10 @@
-import dotenv from "dotenv";
+// import dotenv from "dotenv";
 import { connectDB } from "../config/db.js";
 import User from "../models/User.js";
-dotenv.config({ path: "../../.env" });
+// dotenv.config({ path: "../../.env" });
+import dotenv from "dotenv";
+import path from "path";
+dotenv.config({ path: path.resolve("../.env") }); // adjust path if necessary
 
 async function run() {
   const MONGO_URI = process.env.MONGO_URI;
