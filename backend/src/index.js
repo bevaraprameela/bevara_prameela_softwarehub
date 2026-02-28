@@ -2,7 +2,7 @@ import User from "./models/User.js";
 import bcrypt from "bcryptjs";
 import dotenv from "dotenv";
 dotenv.config();
-import cors from "cors";
+// import cors from "cors";
 import express from "express";
 import http from "http";
 import jwt from "jsonwebtoken";
