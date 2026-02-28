@@ -9,17 +9,50 @@ function sign(user) {
   });
 }
 
+// export const login = async (req, res) => {
+//   const errors = validationResult(req);
+//   if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+//   const { email, password } = req.body;
+//   const emailNorm = (email || "").toLowerCase().trim();
+//   const user = await User.findOne({ email: emailNorm });
+//   if (!user) return res.status(401).json({ message: "Invalid credentials" });
+//   const ok = await user.comparePassword(password);
+//   if (!ok) return res.status(401).json({ message: "Invalid credentials" });
+//   const token = sign(user);
+//   res.json({ token, user });
+// };
 export const login = async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
-  const { email, password } = req.body;
-  const emailNorm = (email || "").toLowerCase().trim();
-  const user = await User.findOne({ email: emailNorm });
-  if (!user) return res.status(401).json({ message: "Invalid credentials" });
-  const ok = await user.comparePassword(password);
-  if (!ok) return res.status(401).json({ message: "Invalid credentials" });
-  const token = sign(user);
-  res.json({ token, user });
+  try {
+
+    console.log("🔵 BODY RECEIVED:", req.body);
+
+    const { email, password } = req.body;
+
+    console.log("🔵 EMAIL:", email);
+    console.log("🔵 PASSWORD:", password);
+
+    const user = await User.findOne({ email });
+
+    console.log("🔵 USER FOUND:", user);
+
+    if (!user) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    const isMatch = await user.comparePassword(password);
+
+    console.log("🔵 PASSWORD MATCH:", isMatch);
+
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    res.json({ message: "Login success" });
+
+  } catch (error) {
+    console.log("❌ ERROR:", error);
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
 export const me = async (req, res) => {

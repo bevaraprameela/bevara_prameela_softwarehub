@@ -1,34 +1,38 @@
-// import dotenv from "dotenv";
-import { connectDB } from "../config/db.js";
-import User from "../models/User.js";
-// dotenv.config({ path: "../../.env" });
+import mongoose from "mongoose";
 import dotenv from "dotenv";
-import path from "path";
-dotenv.config({ path: path.resolve("../.env") }); // adjust path if necessary
+import User from "../models/User.js";
 
-async function run() {
-  const MONGO_URI = process.env.MONGO_URI;
-  if (!MONGO_URI) {
-    console.error("MONGO_URI is required");
+dotenv.config();
+
+await mongoose.connect(process.env.MONGO_URI);
+
+const seedAdmin = async () => {
+  try {
+
+    const existingAdmin = await User.findOne({ email: "admin@prameela.com" });
+
+    if (existingAdmin) {
+      console.log("Admin already exists");
+      process.exit();
+    }
+
+    const admin = new User({
+      name: "Admin",
+      email: "admin@prameela.com",
+      password: "Admin@12345",
+      role: "Admin",
+      companyName: "Prameela Software Solutions"
+    });
+
+    await admin.save(); // ⚠️ THIS TRIGGERS BCRYPT HASHING
+
+    console.log("Admin created successfully");
+    process.exit();
+
+  } catch (error) {
+    console.log(error);
     process.exit(1);
   }
-  await connectDB(MONGO_URI);
-  const email = process.env.ADMIN_EMAIL || "admin@prameela.com";
-  const password = process.env.ADMIN_PASSWORD || "Admin@12345";
-  const name = process.env.ADMIN_NAME || "admin";
+};
 
-  let admin = await User.findOne({ email });
-  if (admin) {
-    console.log("Admin already exists:", admin.email);
-  } else {
-    admin = await User.create({ name, email, password, role: "Admin", companyName: "Prameela Software Solutions" });
-    console.log("Admin created:", admin.email);
-  }
-  process.exit(0);
-}
-
-run().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
-
+seedAdmin();

@@ -2,7 +2,7 @@ import User from "./models/User.js";
 import bcrypt from "bcryptjs";
 import dotenv from "dotenv";
 dotenv.config();
-
+import cors from "cors";
 import express from "express";
 import http from "http";
 import jwt from "jsonwebtoken";
@@ -21,7 +21,11 @@ import messageRoutes from "./routes/messages.routes.js";
 import lookupRoutes from "./routes/lookup.routes.js";
 
 const app = express();
-app.use(cors());
+// app.use(cors());
+app.use(cors({
+  origin: "https://your-netlify-site-name.netlify.app",
+  credentials: true
+}));
 app.use(express.json());
 app.use(morgan("dev"));
 

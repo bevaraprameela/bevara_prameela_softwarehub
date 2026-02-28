@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Routes, Route, Link } from "react-router-dom";
+// import { Routes, Route, Link } from "react-router-dom";
+import { Outlet,Link } from "react-router-dom";
 import api from "../../api/client.js";
 import { io } from "socket.io-client";
 
@@ -492,7 +493,7 @@ export default function AdminDashboard() {
         <Link className="block px-2 py-1 rounded hover:bg-gray-800" to="profile">Profile</Link>
       </aside>
       <main className="col-span-4 p-6 space-y-6">
-        <Routes>
+        {/* <Routes>
           <Route index element={<AdminOverview />} />
           <Route path="employees" element={<Employees />} />
           <Route path="clients" element={<Clients />} />
@@ -501,7 +502,8 @@ export default function AdminDashboard() {
           <Route path="projects" element={<Projects />} />
           <Route path="messages" element={<Messages />} />
           <Route path="profile" element={<Profile />} />
-        </Routes>
+        </Routes> */}
+          <Outlet />
       </main>
     </div>
   );
